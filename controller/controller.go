@@ -22,7 +22,7 @@ func NewAuthController(useruscase services.AuthUsecase) *UserController {
 }
 
 func (h *UserController) Signup(c *gin.Context) {
-	// 1. Parse Hasura Action request format
+
 	var request struct {
 		Input struct {
 			Name     string `json:"name"`
@@ -63,19 +63,35 @@ func (h *UserController) Signup(c *gin.Context) {
 }
 
 func (h *UserController) Login(c *gin.Context) {
-	var user domain.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+
+	var request struct {
+		Input struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		} `json:"input"`
+	}
+	// var user domain.User
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	email := user.Email
-	password := user.Password
+	email := request.Input.Email
+	password := request.Input.Password
 
 	accessToken, refreshToken, err := h.UserUsecase.Login(email, password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	if accessToken == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+	if refreshToken == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+	
 
 	c.JSON(http.StatusOK, gin.H{
 		"access_token":  accessToken,
