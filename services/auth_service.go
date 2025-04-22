@@ -24,7 +24,7 @@ func NewAuthUsecase(userRepo repository.UserRepository, jwtSecret string) AuthUs
 	return &authUsecase{userRepo, jwtSecret}
 }
 func (u *authUsecase) Signup(name, email, password string) (string, string, error) {
-
+	fmt.Println("check point 1", name, email, password)
 	user, err := u.userRepo.GetUserByEmail(email)
 	if err != nil {
 
@@ -62,29 +62,29 @@ func (u *authUsecase) Signup(name, email, password string) (string, string, erro
 func (u *authUsecase) Login(email, password string) (string, string, error) {
 
 	user, err := u.userRepo.GetUserByEmail(email)
-	print(user)
+	print()
 	if err != nil {
 		return "", "", err
 	}
-	if user.ID == "" {
+	if user == nil {
 		return "", "", nil
 	}
 	fmt.Println("check new 1",password,user.Password)
 
 	if !utils.CheckPasswordHash(password, user.Password) {
-		return "checkthe password", "", nil
+		return "", "", nil
 	}
 	accessToken, err := utils.GenerateAccessToken(user.ID, user.Email, u.jwtSecret)
 	if err != nil {
-		return "check the accesstoken", "", err
+		return "", "", err
 	}
 	refreshToken, err := utils.GenerateRefreshToken(user.ID, email, u.jwtSecret)
 	if err != nil {
-		return "check the refresh token", "", err
+		return "", "", err
 	}
 	return accessToken, refreshToken, nil
 
-	// return "", "", nil
+
 }
 func (u *authUsecase) RefreshToken(refreshToken string) (string, error) {
 	claims, err := utils.ValidateToken(refreshToken, u.jwtSecret)
