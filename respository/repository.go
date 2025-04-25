@@ -4,7 +4,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	// "fmt"
 	"log"
 	"net/http"
 
@@ -30,7 +30,7 @@ func (r *userRepository) CreateUser(user *domain.User) error {
 		"email":    user.Email,
 		"password": user.Password,
 	}
-	fmt.Println("check point 10", "user", user)
+
 	err := r.client.Mutate(context.Background(), &m, variables)
 
 	if err != nil {
@@ -38,7 +38,6 @@ func (r *userRepository) CreateUser(user *domain.User) error {
 		return err
 	}
 
-	fmt.Println("check point 11", "user", m.InsertUsersOne)
 	return nil
 }
 
@@ -57,13 +56,13 @@ func (r *userRepository) GetUserByEmail(email string) (*domain.User, error) {
 	variables := map[string]interface{}{
 		"email": email,
 	}
-	fmt.Println("check point 7", "email", email)
+	
 	err := r.client.Query(context.Background(), &query, variables)
 	if err != nil {
 		log.Println("Error fetching user by email:", err)
 		return nil, err
 	}
-	fmt.Println("check point 8", "user", query.Users)
+
 	if len(query.Users) != 0 {
 		return &domain.User{
 			ID:       query.Users[0].ID,
@@ -73,7 +72,7 @@ func (r *userRepository) GetUserByEmail(email string) (*domain.User, error) {
 		}, nil
 	}
 
-	fmt.Println("check point 9", "user")
+
 	return nil, nil
 }
 

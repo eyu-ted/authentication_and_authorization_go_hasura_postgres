@@ -1,20 +1,8 @@
 package main
 
 import (
-	// "github.com/hasura/go-graphql-client"
-	// "log"
-	// "context"
-	// "fmt"
-	// "net/http"
-
-	// "encoding/json"
-	// "github.com/hasura/go-graphql-client"
-	// "blog/authService"
 	"blog/config"
 	"blog/controller"
-	"fmt"
-
-	// domain "blog/models"
 	repository "blog/respository"
 	"blog/services"
 	"log"
@@ -22,18 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// const endpoint = "https://daring-jawfish-51.hasura.app/v1/graphql"
-// const token =	""
 func main() {
-	fmt.Println("hii iiiiiiiiiiiiiiiiiiii")
 	cfg := config.NewConfig()
 	endpoint := cfg.HasuraEndpoint
 
 	adminSecret := cfg.HasuraAdminSecret
 	JWT := cfg.JwtSecret
 
-	fmt.Println("hii iiiiiiiiiiiiiiiiiiii")
-	fmt.Println("hiiiiiiiiii", endpoint, adminSecret)
+
 
 	userRepo := repository.NewUserRepository(endpoint, adminSecret)
 
