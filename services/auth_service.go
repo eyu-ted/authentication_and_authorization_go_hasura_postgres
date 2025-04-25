@@ -30,7 +30,6 @@ func (u *authUsecase) Signup(name, email, password string) (string, string, erro
 
 		return "", "", err
 	}
-	fmt.Println("check point 2", "user")
 	if user != nil {
 		return "user already exist", "", nil
 	}
@@ -40,22 +39,21 @@ func (u *authUsecase) Signup(name, email, password string) (string, string, erro
 		Name:     name,
 		Password: hashpassword,
 	}
-	fmt.Println("check point 3", "user", use)
+
 	err = u.userRepo.CreateUser(use)
 	if err != nil {
 		return "", "", err
 	}
-	fmt.Println("check point 4", "user", use)
+
 	accessToken, err := utils.GenerateAccessToken(use.ID, use.Email, u.jwtSecret)
 	if err != nil {
 		return "", "", err
 	}
-	fmt.Println("check point 5", "user", use)
+
 	refreshToken, err := utils.GenerateRefreshToken(use.ID, email, u.jwtSecret)
 	if err != nil {
 		return "", "", err
 	}
-	fmt.Println("check point 6", "user", use)
 	return accessToken, refreshToken, nil
 
 }
@@ -69,7 +67,6 @@ func (u *authUsecase) Login(email, password string) (string, string, error) {
 	if user == nil {
 		return "", "", nil
 	}
-	fmt.Println("check new 1",password,user.Password)
 
 	if !utils.CheckPasswordHash(password, user.Password) {
 		return "", "", nil
@@ -91,6 +88,7 @@ func (u *authUsecase) RefreshToken(refreshToken string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("check point refresh 1", "claims", claims)
 	email, ok := claims.Claims.(jwt.MapClaims)["email"].(string)
 	if !ok {
 		return "", errors.New("invalid token claims")
@@ -108,5 +106,4 @@ func (u *authUsecase) RefreshToken(refreshToken string) (string, error) {
 	}
 
 	return accessToken, nil
-	return "", nil
 }

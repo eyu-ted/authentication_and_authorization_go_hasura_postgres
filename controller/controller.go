@@ -1,7 +1,7 @@
 package controller
 
 import (
-	domain "blog/models"
+	// domain "blog/models"
 	"blog/services"
 	"net/http"
 
@@ -91,7 +91,6 @@ func (h *UserController) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
-	
 
 	c.JSON(http.StatusOK, gin.H{
 		"access_token":  accessToken,
@@ -100,12 +99,14 @@ func (h *UserController) Login(c *gin.Context) {
 }
 
 func (h *UserController) Refresh(c *gin.Context) {
-	var user domain.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var refresh struct {
+		RefreshToken string `json:"refresh"`
+	}
+	if err := c.ShouldBindJSON(&refresh); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	refreshToken := user.RefreshToken
+	refreshToken := refresh.RefreshToken
 
 	accessToken, err := h.UserUsecase.RefreshToken(refreshToken)
 	if err != nil {

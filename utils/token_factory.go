@@ -26,11 +26,16 @@ func GenerateAccessToken(userID, email, secret string) (string, error) {
 	return tokenString, nil
 }
 
-func GenerateRefreshToken(userID,Email, secret string) (string, error) {
+func GenerateRefreshToken(userID, Email, secret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": userID,
+		"sub":   userID,
 		"email": Email,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(), // Token expires in 30 days
+		"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(), // Token expires in 30 days
+		"http://hasura.io/jwt/claims": map[string]interface{}{
+			"x-hasura-allowed-roles": []string{"user", "admin"},
+			"x-hasura-user-id":       userID,
+			"x-hasura-default-role":  "user",
+		},
 	})
 
 	tokenString, err := token.SignedString([]byte(secret))
