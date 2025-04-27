@@ -86,11 +86,11 @@ type UserRepository interface {
 }
 
 func NewUserRepository(HasuraEndpoint, adminSecret string) UserRepository {
-	// fmt.Println("hiiiiiiiiii", HasuraEndpoint, adminSecret)
+
 	return &userRepository{
-		client: graphql.NewClient("https://real-troll-94.hasura.app/v1/graphql", http.DefaultClient).
+		client: graphql.NewClient(HasuraEndpoint, http.DefaultClient).
 			WithRequestModifier(func(r *http.Request) {
-				r.Header.Set("x-hasura-admin-secret", "5qKQBAx0YO4v6EA32y0mtm78F0fU4vwMF7YZLY4qMri90oymKlzVLa1eBTbfPk82")
+				r.Header.Set("x-hasura-admin-secret", adminSecret)
 			}),
 		adminSecret: adminSecret,
 	}
