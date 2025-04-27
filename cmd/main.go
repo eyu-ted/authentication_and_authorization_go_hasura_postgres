@@ -2,13 +2,26 @@ package main
 
 import (
 	"blog/config"
-	"blog/controller"
+	// "blog/controller"
 	repository "blog/respository"
+	controller "blog/controller"
 	"blog/services"
 	"log"
+	// "os"
+	// "path/filepath"
+	// "net/http"
 
 	"github.com/gin-gonic/gin"
+	"fmt"
+	// "github.com/google/uuid"
+	// "time"
+
 )
+// func GenerateUniqueFileName(originalFilename string) string {
+// 	extension := filepath.Ext(originalFilename) // .jpg, .png, etc
+// 	newName := uuid.New().String() + "-" + time.Now().Format("20060102150405") + extension
+// 	return newName
+// }
 
 func main() {
 	cfg := config.NewConfig()
@@ -16,6 +29,8 @@ func main() {
 
 	adminSecret := cfg.HasuraAdminSecret
 	JWT := cfg.JwtSecret
+
+	fmt.Println("check point 1", "endpoint", endpoint,adminSecret, JWT)
 
 
 
@@ -33,10 +48,52 @@ func main() {
 		public.POST("/login", userController.Login)
 		public.POST("/refresh", userController.Refresh)
 	}
+	router.Static("/uploads", "./uploads")
+
+    // Single Upload
+    router.POST("/upload", controller.UploadSingleHandler)
+
+    // Multiple Uploads
+    router.POST("/upload/multiple", controller.UploadMultipleHandler)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("this is the error:", err)
 	}
+
+	// const uploadPath = "./uploads"
+	
+	
+	// router.POST("/upload", func(c *gin.Context) {
+	// 	file, err := c.FormFile("file")
+	// 	if err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
+	// 		return
+	// 	}
+
+	// 	Filename := GenerateUniqueFileName(file.Filename)
+
+	// 	dst := filepath.Join(uploadPath, Filename)
+	// 	if err := c.SaveUploadedFile(file, dst); err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload file"})
+	// 		return
+	// 	}
+
+	// 	c.JSON(http.StatusOK, gin.H{"message": "Uploaded", "fielename": file.Filename})
+	// })
+
+	// router.GET("/image/:filename", func(c *gin.Context) {
+	// 	filename := c.Param("filename")
+	// 	fullPath := filepath.Join(uploadPath, filename)
+
+	// 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+	// 		c.JSON(http.StatusNotFound, gin.H{"error": "Image not found"})
+	// 		return
+	// 	}
+
+	// 	c.File(fullPath)
+	// })
+
+	
 	// end := "https://real-troll-94.hasura.app/v1/graphql"
 	// email := "eyuu"
 	// client := graphql.NewClient(end, http.DefaultClient).
